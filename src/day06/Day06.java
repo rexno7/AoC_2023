@@ -20,35 +20,30 @@ public class Day06 {
 	}
 	
 	private static ArrayList<Race> readFile(int part) throws FileNotFoundException {
-		Scanner reader = new Scanner(new File("src/day06/resources/input.txt"));
 		Pattern pattern = Pattern.compile("(\\d+)");
 		ArrayList<Race> races = new ArrayList<Race>();
+		Scanner reader = new Scanner(new File("src/day06/resources/input.txt"));
 		
 		// Time
-		if (reader.hasNextLine()) {
-			if (part == 1) {
-				Matcher matcher = pattern.matcher(reader.nextLine().split(":")[1]);
-				while (matcher.find()) {
-					races.add(new Race(Integer.parseInt(matcher.group(1))));
-				}
-			} else { /* part 2 */
-				races.add(new Race(Long.parseLong(
-						reader.nextLine().split(":")[1].replaceAll("\\s+", ""))));
+		if (part == 1) {
+			Matcher matcher = pattern.matcher(reader.nextLine().split(":")[1]);
+			while (matcher.find()) {
+				races.add(new Race(Integer.parseInt(matcher.group(1))));
 			}
-			
+		} else { /* part 2 */
+			races.add(new Race(Long.parseLong(
+					reader.nextLine().split(":")[1].replaceAll("\\s+", ""))));
 		}
 		
 		// Distance
-		if (reader.hasNextLine()) {
-			if (part == 1) {
-				Matcher matcher = pattern.matcher(reader.nextLine().split(":")[1]);
-				for (int i=0; matcher.find(); i++) {
-					races.get(i).setRecordDistance(Integer.parseInt(matcher.group(1)));
-				}
-			} else { /* part 2 */
-				races.get(0).setRecordDistance(Long.parseLong(
-						reader.nextLine().split(":")[1].replaceAll("\\s+", "")));
+		if (part == 1) {
+			Matcher matcher = pattern.matcher(reader.nextLine().split(":")[1]);
+			for (int i=0; matcher.find(); i++) {
+				races.get(i).setRecordDistance(Integer.parseInt(matcher.group(1)));
 			}
+		} else { /* part 2 */
+			races.get(0).setRecordDistance(Long.parseLong(
+					reader.nextLine().split(":")[1].replaceAll("\\s+", "")));
 		}
 		
 		reader.close();
