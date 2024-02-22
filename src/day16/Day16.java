@@ -8,12 +8,7 @@ import java.util.Scanner;
 
 public class Day16 {
 	
-	public final static Vector NORTH = new Vector(0,-1);
-	public final static Vector SOUTH= new Vector(0,1);
-	public final static Vector EAST = new Vector(1,0);
-	public final static Vector WEST = new Vector(-1,0);
-
-	public static void main(String[] args) throws FileNotFoundException {
+	public static void main(String[] args) throws FileNotFoundException, CloneNotSupportedException {
 		Scanner reader = new Scanner(new File("src/day16/resources/input.txt"));
 		List<Tile[]> contraptionGridList = new ArrayList<Tile[]>();
 		while (reader.hasNextLine()) {
@@ -24,25 +19,41 @@ public class Day16 {
 			}
 			contraptionGridList.add(contraptionRow.toArray(new Tile[line.length()]));
 		}
-		Contraption contraption = new Contraption(contraptionGridList.toArray(new Tile[contraptionGridList.size()][]));
-		contraption.simulateBeamTraversal(0, 0, EAST);
-		System.out.println(contraption + "\n");
-		System.out.println(contraption.showEnergizedTileDirections());
-		long totalEnergizedTiles = 0L;
-		for (Tile[] gridRow : contraption.grid) {
-			for (Tile tile : gridRow) {
-				if (tile.energized) {
-					totalEnergizedTiles++;
-				}
-			}
-		}
-		System.out.println(totalEnergizedTiles);
+		Contraption contraptionTemplate = new Contraption(contraptionGridList.toArray(new Tile[contraptionGridList.size()][]));
 		
-//		long maxTotalEnergizedTiles = 0L;
-//		for (int i=0; i<contraption.grid.length; i++) {
-//			maxTotalEnergizedTiles = Math.max(maxTotalEnergizedTiles, 
-//					contraption.simulateBeamTraversal(i, 0, south));
-//		}
+		////////////
+		// Part 1 //
+		////////////
+		
+		int part1 = Contraption.simulateBeamTraversal(contraptionTemplate, 0, 0, Vector.EAST).energizedTileCount();
+		System.out.println("part1: " + part1);
+		
+		////////////
+		// Part 2 //
+		////////////
+		
+		int maxEnergizedCount = 0;
+		// rows from EAST
+		for (int i=0; i<contraptionTemplate.grid.length; i++) {
+			int energizedCount = Contraption.simulateBeamTraversal(contraptionTemplate, 0, i, Vector.EAST).energizedTileCount();
+			maxEnergizedCount = Math.max(maxEnergizedCount, energizedCount);
+		}
+		// rows from WEST
+		for (int i=0; i<contraptionTemplate.grid.length; i++) {
+			int energizedCount = Contraption.simulateBeamTraversal(contraptionTemplate, contraptionTemplate.grid.length-1, i, Vector.WEST).energizedTileCount();
+			maxEnergizedCount = Math.max(maxEnergizedCount, energizedCount);
+		}
+		// columns from SOUTH
+		for (int i=0; i<contraptionTemplate.grid.length; i++) {
+			int energizedCount = Contraption.simulateBeamTraversal(contraptionTemplate, i, 0, Vector.SOUTH).energizedTileCount();
+			maxEnergizedCount = Math.max(maxEnergizedCount, energizedCount);
+		}
+		// columns from NORTH
+		for (int i=0; i<contraptionTemplate.grid.length; i++) {
+			int energizedCount = Contraption.simulateBeamTraversal(contraptionTemplate, i, contraptionTemplate.grid[0].length, Vector.NORTH).energizedTileCount();
+			maxEnergizedCount = Math.max(maxEnergizedCount, energizedCount);
+		}
+		System.out.println("part2: " + maxEnergizedCount);
 	}
 }
 
@@ -53,14 +64,28 @@ class Contraption {
 		this.grid = grid;
 	}
 	
-	public void simulateBeamTraversal(int beamXPos, int beamYPos, Vector beamVector) {
-		if (beamXPos < 0 || beamXPos >= grid[0].length 
-				|| beamYPos < 0 || beamYPos >= grid.length) {
-			return;
+	// Copy constructor
+	private Contraption(Contraption other) {
+		this.grid = new Tile[other.grid.length][];
+		for (int row = 0; row < other.grid.length; row++) {
+			Tile[] tempTileRow = new Tile[other.grid[row].length];
+			for (int col = 0; col < other.grid[row].length; col++) {
+				tempTileRow[col] = new Tile(other.grid[row][col].device);
+			}
+			this.grid[row] = tempTileRow;
 		}
-		for (Vector vector : grid[beamYPos][beamXPos].energize(beamVector)) {
-			simulateBeamTraversal(beamXPos + vector.x, beamYPos + vector.y, vector);
+	}
+	
+	public int energizedTileCount() {
+		int totalEnergizedTiles = 0;
+		for (Tile[] gridRow : this.grid) {
+			for (Tile tile : gridRow) {
+				if (tile.energized) {
+					totalEnergizedTiles++;
+				}
+			}
 		}
+		return totalEnergizedTiles;
 	}
 	
 	public String showEnergizedTiles() {
@@ -77,10 +102,6 @@ class Contraption {
 	
 	public String showEnergizedTileDirections() {
 		StringBuilder sb = new StringBuilder();
-		Vector north = new Vector(0,-1);
-		Vector south = new Vector(0,1);
-		Vector east = new Vector(1,0);
-		Vector west = new Vector(-1,0);
 		for (Tile[] tileRow : grid) {
 			for (Tile tile : tileRow) {
 				int tileIncomingVectorCount = tile.incomingVectors.size();
@@ -90,13 +111,13 @@ class Contraption {
 					sb.append(tile.incomingVectors.size());
 				} else if (tileIncomingVectorCount == 1){
 					Vector incomingVector = tile.incomingVectors.get(0);
-					if (incomingVector.equals(north)) {
+					if (incomingVector.equals(Vector.NORTH)) {
 						sb.append("^");
-					} else if (incomingVector.equals(south)) {
+					} else if (incomingVector.equals(Vector.SOUTH)) {
 						sb.append("v");
-					} else if (incomingVector.equals(east)) {
+					} else if (incomingVector.equals(Vector.EAST)) {
 						sb.append(">");
-					} else if (incomingVector.equals(west)) {
+					} else if (incomingVector.equals(Vector.WEST)) {
 						sb.append("<");
 					}
 				} else {
@@ -121,32 +142,21 @@ class Contraption {
 		sb.delete(sb.length()-1, sb.length());
 		return sb.toString();
 	}
-}
-
-class Vector {
-	int x;
-	int y;
 	
-	public Vector(int x, int y) {
-		this.x = x;
-		this.y = y;
+	public static Contraption simulateBeamTraversal(Contraption contraption, int beamXPos, int beamYPos, Vector beamVector) throws CloneNotSupportedException {
+		Contraption simulatedContraption = new Contraption(contraption);
+		simulatedContraption.simulateBeamTraversal(beamXPos, beamYPos, beamVector);
+		return simulatedContraption;
 	}
 	
-	public Vector add(Vector other) {
-		return new Vector(
-				(this.x + other.x) / Math.abs(this.x + other.x), 
-				(this.y + other.y) / Math.abs((this.y + other.y)));
-	}
-	
-	@Override
-	public boolean equals(Object o) {
-		Vector other = (Vector) o;
-		return x == other.x && y == other.y;
-	}
-	
-	@Override
-	public String toString() {
-		return "(" + x + "," + y + ")";
+	private void simulateBeamTraversal(int beamXPos, int beamYPos, Vector beamVector) {
+		if (beamXPos < 0 || beamXPos >= grid[0].length 
+				|| beamYPos < 0 || beamYPos >= grid.length) {
+			return;
+		}
+		for (Vector vector : grid[beamYPos][beamXPos].energize(beamVector)) {
+			simulateBeamTraversal(beamXPos + vector.x, beamYPos + vector.y, vector);
+		}
 	}
 }
 
@@ -209,6 +219,41 @@ class Tile {
 	
 	@Override
 	public String toString() {
-		return device + " " + energized;
+		StringBuffer sb = new StringBuffer(device + " [");
+		for (Vector vector : incomingVectors) {
+			sb.append(vector + ", ");
+		}
+		if (incomingVectors.size() > 0) {
+			sb.delete(sb.length()-2, sb.length());
+		}
+		sb.append("]");
+		return sb.toString();
+	}
+}
+
+class Vector {
+	
+	public final static Vector NORTH = new Vector(0,-1);
+	public final static Vector SOUTH= new Vector(0,1);
+	public final static Vector EAST = new Vector(1,0);
+	public final static Vector WEST = new Vector(-1,0);
+	
+	int x;
+	int y;
+	
+	public Vector(int x, int y) {
+		this.x = x;
+		this.y = y;
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		Vector other = (Vector) o;
+		return x == other.x && y == other.y;
+	}
+	
+	@Override
+	public String toString() {
+		return "(" + x + "," + y + ")";
 	}
 }
