@@ -14,6 +14,7 @@ public class Day15 {
 		// Read in the initialization sequence steps 
 		Scanner reader = new Scanner(new File("src/day15/resources/input.txt"));
 		String initializationSequence = reader.nextLine();
+		reader.close();
 		String[] stepsInInitSequence = initializationSequence.split(",");
 		
 		// Create 256 boxes labeled 0-255

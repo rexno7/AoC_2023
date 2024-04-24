@@ -41,6 +41,7 @@ public class Day03 {
 			symbolMatrix.add(symbolLine);
 			lineCount++;
 		}
+		reader.close();
 		
 		// Part 1 calculation
 		int partNumSum = 0;

@@ -19,6 +19,7 @@ public class Day10 {
 			char[] line = reader.nextLine().toCharArray();
 			charList.add(line);
 		}
+		reader.close();
 		TileMap tileMap = new TileMap(charList.toArray(new char[charList.size()][charList.get(0).length]));
 		System.out.println("Part 1: " + tileMap.loop.size() / 2);
 		System.out.println("Part 2: " + tileMap.findEnclosureCount());

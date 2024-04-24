@@ -21,6 +21,7 @@ public class Day13 {
 				reflection.add(line);
 			}
 		}
+		reader.close();
 		reflections.add(new Reflection(reflection));
 		
 		// set for part 2

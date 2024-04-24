@@ -25,6 +25,7 @@ public class Day12 {
 			totalFoldedCount += count(config, nums, new HashMap<Integer, Long>());
 			totalUnfoldedCount += count(unfoldedConfig, unfoldedNums, new HashMap<Integer, Long>());
 		}
+		reader.close();
 		System.out.println("part1: " + totalFoldedCount);
 		System.out.println("part2: " + totalUnfoldedCount);
 	}

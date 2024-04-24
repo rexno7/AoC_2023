@@ -12,5 +12,6 @@ public class DayXX {
 			String line = reader.nextLine();
 			System.out.println(line);
 		}
+		reader.close();
 	}
 }

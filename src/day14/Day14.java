@@ -16,6 +16,7 @@ public class Day14 {
 			String line = reader.nextLine();
 			data.addFirst(line);
 		}
+		reader.close();
 		RockPlatform platform = new RockPlatform(data);
 		System.out.println(platform.toString());
 		long cycles = 1000;

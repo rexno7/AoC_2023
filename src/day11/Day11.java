@@ -32,6 +32,7 @@ public class Day11 {
 			}
 			row++;
 		}
+		reader.close();
 		
 		// Identify expanded rows and cols
 		List<Long> galaxyRows = galaxies.stream().map((coord) -> coord.row).distinct().toList();

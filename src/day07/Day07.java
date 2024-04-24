@@ -154,6 +154,7 @@ public class Day07 {
 			String[] values = reader.nextLine().split("\\s+");
 			hands.add(new Hand(values[0], Integer.parseInt(values[1])));
 		}
+		reader.close();
 		
 		// Sort the hands
 		List<Hand> sortedHands = hands.stream().sorted((h1, h2) -> h1.compareTo(h2)).toList();

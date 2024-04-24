@@ -27,6 +27,7 @@ public class Day09 {
 		}
 		System.out.println("part1=" + part1);
 		System.out.println("part2=" + part2);
+		reader.close();
 	}
 	
 	private static int extrapolate(List<Integer> values) {

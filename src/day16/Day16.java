@@ -24,6 +24,7 @@ public class Day16 {
       }
       contraptionGridList.add(contraptionRow.toArray(new Tile[line.length()]));
     }
+    reader.close();
     Contraption contraptionTemplate = new Contraption(
         contraptionGridList.toArray(new Tile[contraptionGridList.size()][]));
 
